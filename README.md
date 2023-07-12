@@ -1,1 +1,1 @@
-# hypermat
+# HyperMAT
