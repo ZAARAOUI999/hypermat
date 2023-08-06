@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 from ._hyperelastic_models import neo_hooke, mooney_rivlin
 from ._strain_energy import StrainEnergy
 
