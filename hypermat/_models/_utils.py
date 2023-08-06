@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 def isochoric(func, grad, **kwargs):
     """Isochoric part of strain energy"""
     w_iso = func(grad, **kwargs)
