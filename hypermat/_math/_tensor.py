@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 import numpy as np
 
 __all__ = ('trace', 'det', 'like', 'transpose', 'identity', 'dot', 'mul', 'inv',
