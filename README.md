@@ -36,7 +36,7 @@ S = umat.jacobian(F)
 C = umat.hessian(F)
 ```
 
-> **NOTE**:  
+> ℹ️ **Note**:  
 Only models in the form of the series function based on invariants are supported.
 
 <h2>License</h2>
