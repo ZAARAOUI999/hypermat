@@ -37,7 +37,7 @@ C = umat.hessian(F)
 ```
 
 > **NOTE**:  
-> Only models in the form of the series function based on invariants are supported.
+Only models in the form of the series function based on invariants are supported.
 
 <h2>License</h2>
 
