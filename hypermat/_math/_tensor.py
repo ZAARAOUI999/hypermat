@@ -62,7 +62,7 @@ def mul(_a, _b, mode=1):
     if mode:
         _c = np.einsum('...ij,...ij->...ij', _a, _b, optimize=True)
     else:
-        _c = np.einsum('i...,i...->i...', _a, _b, optimize=True)
+        _c = np.einsum('ij...,ij...->ij...', _a, _b, optimize=True)
     return _c
 
 def dya(_a, _b, seq):
