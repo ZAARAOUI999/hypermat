@@ -18,6 +18,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 import numpy as np
 from typing import Union, Iterable
 from .._math import (trace, det, like, transpose, identity, dot, mul, inv, dya,
