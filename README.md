@@ -36,8 +36,12 @@ S = umat.jacobian(F)
 C = umat.hessian(F)
 ```
 
-> ℹ️ **Note**:  
-Only models in the form of the series function based on invariants are supported.
+> <picture>
+>   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/light-theme/info.svg">
+>   <img alt="Info" src="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/dark-theme/info.svg">
+> </picture><br>
+>
+> Only models in the form of the series function based on invariants are supported.
 
 <h2>License</h2>
 
