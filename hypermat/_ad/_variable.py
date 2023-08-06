@@ -84,11 +84,11 @@ class Variable():
     
     __rmul__ = __mul__
     
-    def __truediv__(self, other): # self / other
+    def __truediv__(self, other): # self / other #TODO not fixet yet!
         return Variable(self.f / other.f,
                         (self.d * other.f - self.f * other.d) / other.f**2)
 
-    def __rtruediv__(self, other): # other / self
+    def __rtruediv__(self, other): # other / self #TODO not fixet yet!
         return Variable(other.f / self.f,
                         (other.d * self.f - other.f * self.d) / self.f**2)
     
