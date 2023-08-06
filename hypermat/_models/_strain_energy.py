@@ -32,7 +32,7 @@ class StrainEnergy():
         self.args = args
         self.kwargs = kwargs
     def jacobian(self, _grad):
-        "Calculate the second Piola-Kirchoff stress tensor: S = 2 dW/dC"
+        "Calculate the second Piola-Kirchhoff stress tensor: S = 2 dW/dC"
         _grad = Variable(_grad, 1)
         _shape = _grad.shape[:-2]
         _bulk = 0
