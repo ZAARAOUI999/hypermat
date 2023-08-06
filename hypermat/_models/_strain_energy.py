@@ -21,6 +21,7 @@
 ####################### - بــسم الله الرحمــان الرحيــم - #####################
 
 from ._utils import volumetric
+from .._ad import Variable
 
 class StrainEnergy():
     """Strain energy class"""
@@ -32,6 +33,7 @@ class StrainEnergy():
         self.kwargs = kwargs
     def jacobian(self, _grad):
         "Calculate the second Piola-Kirchoff stress tensor: S = 2 dW/dC"
+        _grad = Variable(_grad, 1)
         _shape = _grad.shape[:-2]
         _bulk = 0
         if 'K' in self.kwargs.keys():
@@ -44,6 +46,7 @@ class StrainEnergy():
         return 2.0 * _dwdc
     def hessian(self, _grad):
         "Calculate the material tangent tensor: M = 4 d²W/dC²"
+        _grad = Variable(_grad, 1)
         _shape = _grad.shape[:-2]
         _bulk = 0
         if 'K' in self.kwargs.keys():
