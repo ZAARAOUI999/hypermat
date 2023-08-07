@@ -6,7 +6,7 @@
  Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python.
 </p>
 
-HyperMAT is based on the definitions of the second Piola-Kirchhoff $\large S$ and the material tangent modulus $\large \hat{C}$ given below:
+HyperMAT is based on the definitions of the second Piola-Kirchhoff stress $\large S$ and the material tangent modulus $\large \hat{C}$ given below:
 
 <p align="center">
  $\large S = 2 \frac{\partial{W}}{\partial{C}}$ <br> $\large \hat{C} = 4 \frac{\partial^2{W}}{\partial{C}^2}$
@@ -41,7 +41,7 @@ C = umat.hessian(F)
 >   <img alt="Info" src="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/dark-theme/info.svg">
 > </picture><br>
 >
-> Only models in the form of the series function based on invariants are supported.
+> Only models in the form of series function based on invariants are supported.
 
 <h2>License</h2>
 
