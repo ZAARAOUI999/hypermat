@@ -1,6 +1,6 @@
 [project]
 name = "hypermat"
-version = "0.0.7"
+version = "0.0.8"
 description = "Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python"
 readme = "README.md"
 requires-python = ">=3.6"
