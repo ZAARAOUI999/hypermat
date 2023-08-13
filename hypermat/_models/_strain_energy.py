@@ -18,8 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-####################### - بــسم الله الرحمــان الرحيــم - #####################
-
 from ._utils import volumetric
 from .._ad import Variable
 
@@ -31,16 +29,16 @@ class StrainEnergy():
         self.vol_func = volumetric
         self.args = args
         self.kwargs = kwargs
+        self._bulk = 0
+        if 'K' in self.kwargs.keys():
+            self._bulk = self.kwargs.pop('K')
     def jacobian(self, _grad):
-        "Calculate the second Piola-Kirchhoff stress tensor: S = 2 dW/dC"
+        "Calculate the second Piola-Kirchoff stress tensor: S = 2 dW/dC"
         _grad = Variable(_grad, 1)
         _shape = _grad.shape[:-2]
-        _bulk = 0
-        if 'K' in self.kwargs.keys():
-            _bulk = self.kwargs.pop('K')
         _dwdc = _grad.jacobian(self.iso_func, **self.kwargs).reshape((*_shape,3,3))
-        if _bulk:
-            kwargs = {'K':_bulk}
+        if self._bulk:
+            kwargs = {'K':self._bulk}
             _dwvdc = _grad.jacobian(self.vol_func, **kwargs).reshape((*_shape,3,3))
             _dwdc += _dwvdc
         return 2.0 * _dwdc
@@ -48,12 +46,9 @@ class StrainEnergy():
         "Calculate the material tangent tensor: M = 4 d²W/dC²"
         _grad = Variable(_grad, 1)
         _shape = _grad.shape[:-2]
-        _bulk = 0
-        if 'K' in self.kwargs.keys():
-            _bulk = self.kwargs.pop('K')
         _ddwdcdc = _grad.hessian(self.iso_func, **self.kwargs).reshape((*_shape,3,3,3,3))
-        if _bulk:
-            kwargs = {'K':_bulk}
+        if self._bulk:
+            kwargs = {'K':self._bulk}
             _ddwvdcdc = _grad.hessian(self.vol_func, **kwargs).reshape((*_shape,3,3,3,3))
             _ddwdcdc += _ddwvdcdc
         return 4.0 * _ddwdcdc
