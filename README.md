@@ -47,7 +47,7 @@ C = umat.hessian(F)
 >
 > Only models in the form of series function based on invariants are supported.
  
-Sometimes a lucky engineer will have some tension or compression stress-strain test data, or simple shear test data. Processing and applying these data is a critical step to analyze the hyperelastic models. HyperMAT has a calibration module that can help to get the best fitted model parameters. Let's take a look on how things are going on:
+Sometimes a lucky engineer will have some tension or compression stress-strain test data, or simple shear test data. Processing and applying these data is a critical step to analyze the hyperelastic models. HyperMAT has a calibration module that can help to get the best fitted model parameters. Let's take a look on how are things going on:
 
 ```python
 import os
