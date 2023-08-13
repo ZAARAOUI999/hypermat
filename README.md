@@ -6,7 +6,7 @@
  Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python.
 </p>
 
-[![Generic badge](https://img.shields.io/badge/pypi-v0.0.4-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8244817.svg)](https://doi.org/10.5281/zenodo.8244817)
+[![Generic badge](https://img.shields.io/badge/pypi-v0.0.9-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8244817.svg)](https://doi.org/10.5281/zenodo.8244817)
 
 
 
@@ -60,7 +60,7 @@ umat2 = Yeoh(C10=0.5,C20=-0.01,C30=0.2, K=2000)
 
 #Prepare experimental data
 cdir = os.getcwd()
-dataset = read_file(cdir+'//_hypermat//_calibration//_data//_data_2.csv', delimiter=',', dtype=np.float64)
+dataset = read_file(cdir+'//_hypermat//_calibration//_data//_data_2.csv', delimiter=',', dtype=float)
 data = to_dict(dataset[1:,:], ['time', 'strain', 'stress'])
 strain = data['strain']
 stress = data['stress']
