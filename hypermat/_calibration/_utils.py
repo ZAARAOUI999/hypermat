@@ -20,7 +20,14 @@
 
 
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
 
+def init_plot():
+    matplotlib.rcParams['font.family'] = ['Times New Roman']
+    plt.minorticks_on()
+    plt.gca().grid(which='major', color='#808080')
+    plt.gca().grid(which='minor', color='#C0C0C0')
 
 def read_file(file_path, **kwds):
     """Read csv, txt files"""
