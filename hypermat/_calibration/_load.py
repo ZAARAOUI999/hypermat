@@ -26,7 +26,7 @@ from scipy.optimize import minimize, fsolve, zeros
 import matplotlib.pyplot as plt
 import matplotlib
 
-from ._utils import to_dict
+from ._utils import to_dict, init_plot
 from .._math import *
 
 matplotlib.rcParams['font.family'] = ['Times New Roman']
@@ -72,6 +72,7 @@ class Test():
         """Plots model strain-stress curve"""
         _stress = self.stress()[...,0,0].ravel()
         _strain = self.data['strain']
+        init_plot()
         plt.gca().plot(_strain, _stress, label=self._label, **kwargs)
         plt.gca().legend()
 
@@ -79,6 +80,7 @@ class Test():
         """Plots experimental stress-strain curve"""
         _stress = self.data['stress']
         _strain = self.data['strain']
+        init_plot()
         plt.gca().plot(_strain, _stress, label='Experimental data', **kwargs)
         plt.gca().set_xlabel(SN[self._ss_type])
         plt.gca().set_ylabel(SS[self._ss_type])
