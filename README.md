@@ -6,7 +6,8 @@
  Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python.
 </p>
 
-[![Generic badge](https://img.shields.io/badge/pypi-v0.1.0-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8244888.svg)](https://doi.org/10.5281/zenodo.8244888)
+[![Generic badge](https://img.shields.io/badge/pypi-v0.1.0-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8245340.svg)](https://doi.org/10.5281/zenodo.8245340)
+
 
 
 
