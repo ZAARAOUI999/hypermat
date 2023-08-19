@@ -18,8 +18,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-####################### - بــسم الله الرحمــان الرحيــم - #####################
-
 import numpy as np
 from typing import Union, Iterable
 from .._math import (trace, det, like, transpose, identity, dot, mul, inv, dya,
@@ -37,43 +35,43 @@ class Variable():
             v = d
             d = np.zeros_like(f)
             d.fill(v)
-        if isinstance(d, (int, float)):
-            v = dd
-            n = self.n
-            m = len(self.f)
-            dd = np.zeros((m,*n,*n))
-            dd.fill(v)    
         self.d = d
+        if isinstance(dd, (int, float)):
+            v = dd
+            n = self.d.shape[-2:]
+            m = self.d.shape[:-2]
+            dd = np.zeros((*m,*n,*n))
+            dd.fill(v)
         self.dd = dd
-        
+
     def __repr__(self):
         return f"Variable \n f = {self.f}\n d = {self.d}"
-    
+
     def __setitem__(self, indices, values):
         if isinstance(values, Variable):
             self.f[indices] = values.f
             self.d[indices] = values.d
         else:
             self.f[indices] = values
-    
+
     def __getitem__(self, indices):
         return self.f[indices]
-    
+
     def __neg__(self):
         return Variable(-self.f, -self.d, -self.dd)
-    
+
     def __add__(self, other):
         if isinstance(other, (Iterable, int, float)):
             return Variable(self.f + other, self.d, self.dd)
         return Variable(self.f + other.f, self.d + other.d, self.dd + other.dd)
     __iadd__ = __radd__ = __add__
-    
+
     def __sub__(self, other):
         return self + (-other)
-    
+
     def __rsub__(self, other):
         return - self + other
-    
+
     def __mul__(self, other):
         if isinstance(other, (int, float)):
             return Variable(other * self.f, other * self.d, other * self.dd)
@@ -81,17 +79,17 @@ class Variable():
                         mul(other.f, self.d, 0) + mul(other.d, self.f, 0),
                         mul(other.dd, self.f, 0) + dya(self.d, other.d,'ij,kl')\
                             + dya(other.d, self.d,'ij,kl') + mul(other.f, self.dd, 0))
-    
+
     __rmul__ = __mul__
-    
-    def __truediv__(self, other): # self / other #TODO not fixet yet!
+
+    def __truediv__(self, other): # self / other #TODO
         return Variable(self.f / other.f,
                         (self.d * other.f - self.f * other.d) / other.f**2)
 
-    def __rtruediv__(self, other): # other / self #TODO not fixet yet!
+    def __rtruediv__(self, other): # other / self #TODO
         return Variable(other.f / self.f,
                         (other.d * self.f - other.f * self.d) / self.f**2)
-    
+
     def __matmul__(self,other):
         if isinstance(other, (int, float)):
             return Variable(other * self.f, other * self.d, other * self.dd)
@@ -99,7 +97,7 @@ class Variable():
                         dot(self.d, other.f) + dot(self.f, other.d),
                         mul(other.dd, self.f, 0) + dya(self.d, other.d,'ij,kl')\
                             + dya(other.d, self.d,'ij,kl') + mul(other.f, self.dd, 0))
-    
+
     def __pow__(self, other):
         assert isinstance(other, (int, float)), "only supporting int/float powers"
         Der1 = other * np.power(self.f, other-1.0)
@@ -107,23 +105,54 @@ class Variable():
         return Variable(np.power(self.f, other),
                         mul(Der1, self.d, 0),
                         mul(self.dd, Der1, 0) + mul(dya(self.d,self.d,'ij,kl'), Der2, 0))
-    
+
     @property
     def T(self):
         return transpose(self.f)
-    
+
     def ravel(self):
         return self.f.ravel()
-    
+
     def reshape(self, shape):
         return self.f.reshape(shape)
-    
+
+    @property
+    def stretches(self):
+        F = self.f
+        C = dot(transpose(F), F)
+        λi, Ni = np.linalg.eig(C)
+
+        λ1 = np.sqrt(λi[...,0])
+        λ2 = np.sqrt(λi[...,1])
+        λ3 = np.sqrt(λi[...,2])
+        I3 = self.I3(C)
+
+        N1 = Ni[...,0]
+        N2 = Ni[...,1]
+        N3 = Ni[...,2]
+
+        dλ1dC = 1/(2*λ1) * np.einsum('...i,...j->...ij', N1, N1)
+        dλ2dC = 1/(2*λ2) * np.einsum('...i,...j->...ij', N2, N2)
+        dλ3dC = 1/(2*λ3) * np.einsum('...i,...j->...ij', N3, N3)
+
+        #1st case: λ1!=λ2!=λ3
+
+        ddλ1dCdC = -0.25*λ1**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N1, N1, N1, N1)
+        ddλ2dCdC = -0.25*λ2**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N2, N2, N2, N2)
+        ddλ3dCdC = -0.25*λ3**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N3, N3, N3, N3)
+
+        λ1 = I3**(-1.0/6.0) * Variable(λ1, dλ1dC, ddλ1dCdC)
+        λ2 = I3**(-1.0/6.0) * Variable(λ2, dλ2dC, ddλ2dCdC)
+        λ3 = I3**(-1.0/6.0) * Variable(λ3, dλ3dC, ddλ3dCdC)
+
+        return λ1, λ2, λ3
+
     def I1(self, C):
-        Fun = trace(C) 
+        Fun = trace(C)
         Der = identity(C)
         Hes = zeros((*self.n,3,3,3,3))
         return Variable(Fun, Der, Hes)
-    
+
     def I2(self, C):
         I = identity(C)
         TrC = trace(C)
@@ -133,7 +162,7 @@ class Variable():
         dTrCdC = np.einsum('...ij,...kl->...iklj',I, I)
         Hes = dTrCIdC - dTrCdC
         return Variable(Fun, Der, Hes)
-    
+
     def I3(self, C):
         invC = inv(C)
         Fun = det(C)
@@ -142,24 +171,24 @@ class Variable():
         invCinvC = np.einsum('...ij,...kl->...ijkl',invC, invC)
         Hes = mul(Fun, invCinvC, 0) + mul(Fun, dTrCinvdC, 0)
         return Variable(Fun, Der, Hes)
-    
+
     @property
     def invariants(self):
         F = self.f
         C = dot(transpose(F), F)
-        I1 = self.I1(C)  
-        I2 = self.I2(C)  
+        I1 = self.I1(C)
+        I2 = self.I2(C)
         I3 = self.I3(C)
-        J1 = I3**(-1.0/3.0) * I1 
-        J2 = I3**(-2.0/3.0) * I2 
+        J1 = I3**(-1.0/3.0) * I1
+        J2 = I3**(-2.0/3.0) * I2
         J3 = I3**(1.0/2.0)
         return C, J1, J2, J3
-    
+
     def jacobian(self, func, **kwargs):
         _x = self
         _fx = func(_x, **kwargs)
         return  _fx.d.reshape((*self.n,3,3))
-    
+
     def hessian(self, func, **kwargs):
         _x = self
         _fx = func(_x, **kwargs)
