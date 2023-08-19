@@ -315,3 +315,14 @@ def blatz_ko(_F: SN, **_params) -> SN:
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
+
+def ogden(_F: SN, **_params) -> SN:
+    _λ1, _λ2, _λ3 = _F.stretches
+    _params = list(_params.values())
+    _mu = _params[0::2]
+    _alpha = _params[1::2]
+    _W = 0.0
+    for _i, _mui in enumerate(_mu):
+        _W += (2.0 * _mui / _alpha[_i]**2.0) * (_λ1**_alpha[_i] + _λ2**_alpha[_i] +
+                                    _λ3**_alpha[_i] - 3.0)
+    return _W
