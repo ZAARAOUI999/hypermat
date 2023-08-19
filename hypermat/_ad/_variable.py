@@ -131,15 +131,15 @@ class Variable():
         N2 = Ni[...,1]
         N3 = Ni[...,2]
 
-        dλ1dC = 1/(2*λ1) * np.einsum('...i,...j->...ij', N1, N1)
-        dλ2dC = 1/(2*λ2) * np.einsum('...i,...j->...ij', N2, N2)
-        dλ3dC = 1/(2*λ3) * np.einsum('...i,...j->...ij', N3, N3)
+        dλ1dC = np.einsum('...,...i,...j->...ij', 1/(2*λ1), N1, N1)
+        dλ2dC = np.einsum('...,...i,...j->...ij', 1/(2*λ2), N2, N2)
+        dλ3dC = np.einsum('...,...i,...j->...ij', 1/(2*λ3), N3, N3)
 
         #1st case: λ1!=λ2!=λ3
 
-        ddλ1dCdC = -0.25*λ1**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N1, N1, N1, N1)
-        ddλ2dCdC = -0.25*λ2**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N2, N2, N2, N2)
-        ddλ3dCdC = -0.25*λ3**(-3) * np.einsum('...i,...j,...k,...l->...ikjl', N3, N3, N3, N3)
+        ddλ1dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ1**(-3), N1, N1, N1, N1)
+        ddλ2dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ2**(-3), N2, N2, N2, N2)
+        ddλ3dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ3**(-3), N3, N3, N3, N3)
 
         λ1 = I3**(-1.0/6.0) * Variable(λ1, dλ1dC, ddλ1dCdC)
         λ2 = I3**(-1.0/6.0) * Variable(λ2, dλ2dC, ddλ2dCdC)
