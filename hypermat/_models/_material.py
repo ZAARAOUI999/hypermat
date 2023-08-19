@@ -19,7 +19,7 @@
 """
 
 from ._hyperelastic_models import (neo_hooke, mooney_rivlin, isihara, biderman,
-                                   yeoh, james_green_simpson)
+                                   yeoh, james_green_simpson, ogden)
 from ._strain_energy import StrainEnergy
 
 
@@ -64,3 +64,12 @@ class JamesGreenSimpson(StrainEnergy):
     """James-Green-Simpson hyperelastic model"""
     def __init__(self, **kwargs):
         super().__init__(james_green_simpson, **kwargs)
+
+###############################################################################
+############################# - W = (λ1, λ2, λ3) - ################################
+###############################################################################
+
+class Ogden(StrainEnergy):
+    """Ogden hyperelastic model"""
+    def __init__(self, **kwargs):
+        super().__init__(ogden, **kwargs)
