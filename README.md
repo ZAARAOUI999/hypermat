@@ -34,10 +34,10 @@ np.random.seed(125161)
 F = (np.eye(3) + np.random.rand(50, 8, 3, 3) / 10).T
 
 # Get stress tensor
-P = umat.jacobian(F.T)
+P = umat.jacobian(F)
 
 # Get tangent modulus tensor
-A = umat.hessian(F.T)
+A = umat.hessian(F)
 ```
  
 Sometimes a lucky engineer will have some tension or compression stress-strain test data, or simple shear test data. Processing and applying these data is a critical step to analyze the hyperelastic models. HyperMAT has a calibration module that can help to get the best fitted model parameters. Let's take a look on how are things going on:
