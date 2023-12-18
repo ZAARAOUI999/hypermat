@@ -30,10 +30,8 @@ import hypermat as hm
 umat = hm.NeoHooke(C10=0.5, K=0)
 
 # Initialise deformation gradient values
-F = np.array(hm.like(np.eye(3), np.zeros((100,100,3,3))))
-F[...,0,0] = 0.25
-F[...,0,2] = 0.5
-F[...,2,1] = 0.3
+np.random.seed(125161)
+F = (np.eye(3) + np.random.rand(50, 8, 3, 3) / 10).T
 
 # Get stress tensor
 P = umat.jacobian(F.T)
