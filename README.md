@@ -36,10 +36,10 @@ F[...,0,2] = 0.5
 F[...,2,1] = 0.3
 
 # Get stress tensor
-P = umat.jacobian(F)
+P = umat.jacobian(F.T)
 
 # Get tangent modulus tensor
-A = umat.hessian(F)
+A = umat.hessian(F.T)
 ```
  
 Sometimes a lucky engineer will have some tension or compression stress-strain test data, or simple shear test data. Processing and applying these data is a critical step to analyze the hyperelastic models. HyperMAT has a calibration module that can help to get the best fitted model parameters. Let's take a look on how are things going on:
