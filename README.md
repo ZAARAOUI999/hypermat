@@ -9,10 +9,10 @@
 [![Generic badge](https://img.shields.io/badge/pypi-v0.1.1-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8285247.svg)](https://doi.org/10.5281/zenodo.8285247) [![Downloads](https://static.pepy.tech/badge/hypermat/week)](https://pepy.tech/project/hypermat)
 
 
-HyperMAT is based on the definitions of the second Piola-Kirchhoff stress $\large S$ and the material tangent modulus $\large \hat{C}$ given below:
+HyperMAT is based on the definitions of the first Piola-Kirchhoff stress $\large P$ and the tangent modulus $\large \hat{A}$ given below:
 
 <p align="center">
- $\large S = 2 \frac{\partial{W}}{\partial{C}}$ <br> $\large \hat{C} = 4 \frac{\partial^2{W}}{\partial{C}^2}$
+ $\large P = \frac{\partial{W}}{\partial{F}}$ <br> $\large \hat{A} = \frac{\partial^2{W}}{\partial{F}^2}$
 </p>
 
 <h2>How to use</h2>
@@ -33,10 +33,10 @@ F[...,0,2] = 0.5
 F[...,2,1] = 0.3
 
 # Get stress tensor
-S = umat.jacobian(F)
+P = umat.jacobian(F)
 
-# Get material tangent modulus tensor
-C = umat.hessian(F)
+# Get tangent modulus tensor
+A = umat.hessian(F)
 ```
  
 Sometimes a lucky engineer will have some tension or compression stress-strain test data, or simple shear test data. Processing and applying these data is a critical step to analyze the hyperelastic models. HyperMAT has a calibration module that can help to get the best fitted model parameters. Let's take a look on how are things going on:
