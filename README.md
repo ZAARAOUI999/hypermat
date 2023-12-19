@@ -52,8 +52,8 @@ umat1 = NeoHooke(C10=1.5,K=2000)
 umat2 = Yeoh(C10=0.5,C20=-0.01,C30=0.2, K=2000)
 
 #Prepare experimental data
-cdir = os.getcwd()
-dataset = read_file(cdir+'//_hypermat//_calibration//_data//_data_2.csv', delimiter=',', dtype=float)
+dir_path = os.path.dirname(os.path.realpath(__file__))
+dataset = read_file(dir_path+'//_data//_data_2.csv', delimiter=',', dtype=float)
 data = to_dict(dataset[1:,:], ['time', 'strain', 'stress'])
 strain = data['strain']
 stress = data['stress']
@@ -76,7 +76,7 @@ test2.plot_model(c='g')
 You should get something like that:
 
 <p align="center">
- <img src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/5513f0ef-733f-40c6-ad99-369814ae97ee">
+ <img src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/c38d9db0-9497-40d4-a80b-e832cde3f4dc">
 </p>
 
 ```
