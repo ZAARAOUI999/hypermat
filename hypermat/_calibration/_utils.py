@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -24,6 +27,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 def init_plot():
+    """Initialize plot"""
     matplotlib.rcParams['font.family'] = ['Times New Roman']
     plt.minorticks_on()
     plt.gca().grid(which='major', color='#808080')
@@ -36,6 +40,7 @@ def read_file(file_path, **kwds):
     return out[~np.isnan(out)].reshape(-1,ncols)
 
 def to_dict(data, keys):
+    """Create a dictionary with the given data and keys."""
     out = dict()
     for i, key in enumerate(keys):
         out[key] = data[...,i]
