@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -21,23 +24,17 @@
 
 import lmfit as lm
 import numpy as np
-from scipy.optimize import minimize, fsolve, zeros
-
 import matplotlib.pyplot as plt
-import matplotlib
 
-from ._utils import to_dict, init_plot
-from .._math import *
+from scipy.optimize import fsolve
+from ._utils import init_plot
 
-matplotlib.rcParams['font.family'] = ['Times New Roman']
-plt.minorticks_on()
-plt.gca().grid(which='major', color='#808080')
-plt.gca().grid(which='minor', color='#C0C0C0')
 
-SN = {'E':r'Engineering Strain $\epsilon_e$', 'T':'True Strain $\epsilon_t$'}
-SS = {'E':'Engineering Stress $\sigma_e$', 'T':'True Stress $\sigma_t$'}
+SN = {'E':r'Engineering Strain $\epsilon_e$', r'T':'True Strain $\epsilon_t$'}
+SS = {'E':r'Engineering Stress $\sigma_e$', r'T':'True Stress $\sigma_t$'}
 
 class Test():
+    """Test class"""
     def __init__(self, umat, data, ss_type: str = 'E'):
         """ss_type: E for Engineering and T for True"""
         self._umat = umat
@@ -45,14 +42,18 @@ class Test():
         self._grad = None
         self._ss_type = ss_type
         self._label = 'Experimental data'
+        
+    def _objective(self):
+        """Optimization function"""
+        raise NotImplementedError()
 
     def stress(self):
         """Computes stress tensor"""
         if self._ss_type=='E':
-            _stress = self._grad @ self._umat.jacobian(self._grad)
+            _stress = self._umat.jacobian(self._grad)
         elif self._ss_type=='T':
-            _stress = np.einsum('...,...ij->...ij', det(self._grad),
-                                self._grad @ self._umat.jacobian(self._grad) @ self._grad)
+            _stress = np.einsum('...,...ij->...ij', np.det(self._grad),
+                               self._umat.jacobian(self._grad) @ self._grad)
         return _stress
 
     def fit_data(self, min_values: list[int|float] = [],
@@ -70,7 +71,7 @@ class Test():
 
     def plot_model(self, **kwargs):
         """Plots model strain-stress curve"""
-        _stress = self.stress()[...,0,0].ravel()
+        _stress = self.stress()[0,0,...].ravel()
         _strain = self.data['strain']
         init_plot()
         plt.gca().plot(_strain, _stress, label=self._label, **kwargs)
@@ -91,12 +92,12 @@ class Uniaxial(Test):
     def __init__(self, umat, data, **kwds):
         super().__init__(umat, data, **kwds)
         self._grad = self.update_grad()
-        self._label = 'Uniaxial'
+        self._label = 'Uniaxial (%s)'%(self._umat._label) 
 
     def _function(self, x):
         """Computes stress for a given stretch"""
         F = self._grad
-        F[0,:,1,1] = F[0,:,2,2] = x
+        F[1,1,:,0] = F[2,2,:,0] = x
         stress = self.stress()
         return stress
 
@@ -110,10 +111,10 @@ class Uniaxial(Test):
             else:
                 self._umat._bulk = params[param].value
         def calcS22Abs(x):
-            return abs(self._function(x)[...,1,1].ravel())
+            return abs(self._function(x)[1,1,...].ravel())
         # search for transverse stretch that gives S22=0
         lam2 = fsolve(calcS22Abs, x0=1.0/np.sqrt(lamda))
-        stress = self._function(lam2)[...,0,0].ravel()
+        stress = self._function(lam2)[0,0,...].ravel()
         return abs(self.data['stress'] - stress)
 
     def update_grad(self):
@@ -124,19 +125,19 @@ class Uniaxial(Test):
         F = np.zeros((1,n,3,3))
         F[0,:,0,0] = lamda
         F[0,:,1,1] = F[0,:,2,2] = 1.0/np.sqrt(lamda)
-        return F
+        return F.T
 
 class EquiBiaxial(Test):
     """Compressible biaxial loading"""
     def __init__(self, umat, data, **kwds):
         super().__init__(umat, data, **kwds)
         self._grad = self.update_grad()
-        self._label = 'Equibiaxial'
+        self._label = 'Equibiaxial (%s)'%(self._umat._label) 
 
     def _function(self, x):
         """Computes stress for a given stretch"""
         F = self._grad
-        F[0,:,2,2] = x
+        F[2,2,:,0] = x
         stress = self.stress()
         return stress
 
@@ -150,10 +151,10 @@ class EquiBiaxial(Test):
             else:
                 self._umat._bulk = params[param].value
         def calcS22Abs(x):
-            return abs(self._function(x)[...,2,2].ravel())
+            return abs(self._function(x)[2,2,...].ravel())
         # search for transverse stretch that gives S33=0
         lam2 = fsolve(calcS22Abs, x0=1.0/np.square(lamda))
-        stress = self._function(lam2)[...,0,0].ravel()
+        stress = self._function(lam2)[0,0,...].ravel()
         return abs(self.data['stress'] - stress)
 
     def update_grad(self):
@@ -164,19 +165,19 @@ class EquiBiaxial(Test):
         F = np.zeros((1,n,3,3))
         F[0,:,0,0] = F[0,:,1,1] = lamda
         F[0,:,2,2] = 1.0/np.square(lamda)
-        return F
+        return F.T
 
 class PureShear(Test):
     """Compressible planar loading."""
     def __init__(self, umat, data, **kwds):
         super().__init__(umat, data, **kwds)
         self._grad = self.update_grad()
-        self._label = 'Pure shear'
+        self._label = 'Pure shear (%s)'%(self._umat._label) 
 
     def _function(self, x):
         """Computes stress for a given stretch"""
         F = self._grad
-        F[0,:,2,2] = x
+        F[2,2,:,0] = x
         stress = self.stress()
         return stress
 
@@ -190,10 +191,10 @@ class PureShear(Test):
             else:
                 self._umat._bulk = params[param].value
         def calcS22Abs(x):
-            return abs(self._function(x)[...,2,2].ravel())
+            return abs(self._function(x)[2,2,...].ravel())
         # search for transverse stretch that gives S33=0
         lam2 = fsolve(calcS22Abs, x0=1.0/lamda)
-        stress = self._function(lam2)[...,0,0].ravel()
+        stress = self._function(lam2)[0,0,...].ravel()
         return abs(self.data['stress'] - stress)
 
     def update_grad(self):
@@ -205,4 +206,4 @@ class PureShear(Test):
         F[0,:,0,0] = lamda
         F[0,:,1,1] = 1.0
         F[0,:,2,2] = 1.0/lamda
-        return F
+        return F.T
