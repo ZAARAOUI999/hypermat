@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -17,179 +20,38 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
-
-import numpy as np
 from typing import Union, Iterable
-from .._math import (trace, det, like, transpose, identity, dot, mul, inv, dya,
-                     zeros)
 
-class Variable():
-    """Hyper-Dual variable class"""
-    def __init__(self, f: Union[Iterable, int, float],
-                 d: Union[Iterable, int, float] = 0.0,
-                 dd: Union[Iterable, int, float] = 0.0):
-        self.f = np.array(f)
-        self.shape = f.shape
-        self.n = self.shape[:-2]
-        if isinstance(d, (int, float)):
-            v = d
-            d = np.zeros_like(f)
-            d.fill(v)
-        self.d = d
-        if isinstance(dd, (int, float)):
-            v = dd
-            n = self.d.shape[-2:]
-            m = self.d.shape[:-2]
-            dd = np.zeros((*m,*n,*n))
-            dd.fill(v)
-        self.dd = dd
+import tensortrax as tr
+import tensortrax.math as tm
 
-    def __repr__(self):
-        return f"Variable \n f = {self.f}\n d = {self.d}"
+class Deformation():
+    """Deformation Gradient class"""
+    def __init__(self, f: Union[Iterable, int, float], **kwargs):
+        """Initialise deformation gradient values
 
-    def __setitem__(self, indices, values):
-        if isinstance(values, Variable):
-            self.f[indices] = values.f
-            self.d[indices] = values.d
-        else:
-            self.f[indices] = values
-
-    def __getitem__(self, indices):
-        return self.f[indices]
-
-    def __neg__(self):
-        return Variable(-self.f, -self.d, -self.dd)
-
-    def __add__(self, other):
-        if isinstance(other, (Iterable, int, float)):
-            return Variable(self.f + other, self.d, self.dd)
-        return Variable(self.f + other.f, self.d + other.d, self.dd + other.dd)
-    __iadd__ = __radd__ = __add__
-
-    def __sub__(self, other):
-        return self + (-other)
-
-    def __rsub__(self, other):
-        return - self + other
-
-    def __mul__(self, other):
-        if isinstance(other, (int, float)):
-            return Variable(other * self.f, other * self.d, other * self.dd)
-        return Variable(mul(self.f, other.f, 0),
-                        mul(other.f, self.d, 0) + mul(other.d, self.f, 0),
-                        mul(other.dd, self.f, 0) + dya(self.d, other.d,'ij,kl')\
-                            + dya(other.d, self.d,'ij,kl') + mul(other.f, self.dd, 0))
-
-    __rmul__ = __mul__
-
-    def __truediv__(self, other): # self / other #TODO
-        return Variable(self.f / other.f,
-                        (self.d * other.f - self.f * other.d) / other.f**2)
-
-    def __rtruediv__(self, other): # other / self #TODO
-        return Variable(other.f / self.f,
-                        (other.d * self.f - other.f * self.d) / self.f**2)
-
-    def __matmul__(self,other):
-        if isinstance(other, (int, float)):
-            return Variable(other * self.f, other * self.d, other * self.dd)
-        return Variable(dot(self.f, other.f),
-                        dot(self.d, other.f) + dot(self.f, other.d),
-                        mul(other.dd, self.f, 0) + dya(self.d, other.d,'ij,kl')\
-                            + dya(other.d, self.d,'ij,kl') + mul(other.f, self.dd, 0))
-
-    def __pow__(self, other):
-        assert isinstance(other, (int, float)), "only supporting int/float powers"
-        Der1 = other * np.power(self.f, other-1.0)
-        Der2 = other * (other-1.0) * (self.f**(other-2.0))
-        return Variable(np.power(self.f, other),
-                        mul(Der1, self.d, 0),
-                        mul(self.dd, Der1, 0) + mul(dya(self.d,self.d,'ij,kl'), Der2, 0))
-
-    @property
-    def T(self):
-        return transpose(self.f)
-
-    def ravel(self):
-        return self.f.ravel()
-
-    def reshape(self, shape):
-        return self.f.reshape(shape)
-
-    @property
-    def stretches(self):
-        F = self.f
-        C = dot(transpose(F), F)
-        λi, Ni = np.linalg.eig(C)
-
-        λ1 = np.sqrt(λi[...,0])
-        λ2 = np.sqrt(λi[...,1])
-        λ3 = np.sqrt(λi[...,2])
-        I3 = self.I3(C)
-
-        N1 = Ni[...,0]
-        N2 = Ni[...,1]
-        N3 = Ni[...,2]
-
-        dλ1dC = np.einsum('...,...i,...j->...ij', 1/(2*λ1), N1, N1)
-        dλ2dC = np.einsum('...,...i,...j->...ij', 1/(2*λ2), N2, N2)
-        dλ3dC = np.einsum('...,...i,...j->...ij', 1/(2*λ3), N3, N3)
-
-        #1st case: λ1!=λ2!=λ3
-
-        ddλ1dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ1**(-3), N1, N1, N1, N1)
-        ddλ2dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ2**(-3), N2, N2, N2, N2)
-        ddλ3dCdC = np.einsum('...,...i,...j,...k,...l->...ikjl', -0.25*λ3**(-3), N3, N3, N3, N3)
-
-        λ1 = I3**(-1.0/6.0) * Variable(λ1, dλ1dC, ddλ1dCdC)
-        λ2 = I3**(-1.0/6.0) * Variable(λ2, dλ2dC, ddλ2dCdC)
-        λ3 = I3**(-1.0/6.0) * Variable(λ3, dλ3dC, ddλ3dCdC)
-
-        return λ1, λ2, λ3
-
-    def I1(self, C):
-        Fun = trace(C)
-        Der = identity(C)
-        Hes = zeros((*self.n,3,3,3,3))
-        return Variable(Fun, Der, Hes)
-
-    def I2(self, C):
-        I = identity(C)
-        TrC = trace(C)
-        Fun = 0.5 * (TrC**2.0 - trace(dot(C,C)))
-        Der = mul(TrC, I, 0) - transpose(C)
-        dTrCIdC = np.einsum('...ij,...kl->...ijkl',I, I)
-        dTrCdC = np.einsum('...ij,...kl->...iklj',I, I)
-        Hes = dTrCIdC - dTrCdC
-        return Variable(Fun, Der, Hes)
-
-    def I3(self, C):
-        invC = inv(C)
-        Fun = det(C)
-        Der = mul(Fun, transpose(invC), 0)
-        dTrCinvdC = - np.einsum('...ij,...kl->...iklj',invC, invC)
-        invCinvC = np.einsum('...ij,...kl->...ijkl',invC, invC)
-        Hes = mul(Fun, invCinvC, 0) + mul(Fun, dTrCinvdC, 0)
-        return Variable(Fun, Der, Hes)
+        Args:
+            f (Union[Iterable, int, float]): Initial values of deformation gradient.
+        """
+        self._f = tr.Tensor(f, ntrax=2, **kwargs)
+        self._f.init(gradient=True, hessian=True, δx=True, Δx=True)
 
     @property
     def invariants(self):
-        F = self.f
-        C = dot(transpose(F), F)
-        I1 = self.I1(C)
-        I2 = self.I2(C)
-        I3 = self.I3(C)
-        J1 = I3**(-1.0/3.0) * I1
-        J2 = I3**(-2.0/3.0) * I2
-        J3 = I3**(1.0/2.0)
-        return C, J1, J2, J3
-
-    def jacobian(self, func, **kwargs):
-        _x = self
-        _fx = func(_x, **kwargs)
-        return  _fx.d.reshape((*self.n,3,3))
-
-    def hessian(self, func, **kwargs):
-        _x = self
-        _fx = func(_x, **kwargs)
-        return  _fx.dd.reshape((*self.n,3,3,3,3))
+        """Calculate Cauchy Green Strain invariants."""
+        _f = self._f
+        _c = _f.T @ _f
+        _i1 = tm.trace(_c)
+        _i2 = 0.5 * (_i1**2.0 - tm.trace(_c@_c))
+        _i3 = tm.linalg.det(_c)
+        _j1 = _i3**(-1.0/3.0) * _i1
+        _j2 = _i3**(-2.0/3.0) * _i2
+        _j3 = _i3**(1.0/2.0)
+        return (_c, _j1, _j2, _j3)
+    @property
+    def stretches(self):
+        """Calculate principal stretches."""
+        _f = self._f
+        _c = _f.T @ _f
+        _lmbda_i = tm.linalg.det(_c)**(-1.0/6.0) * tm.linalg.eigvalsh(_c)**0.5
+        return _lmbda_i
