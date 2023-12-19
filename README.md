@@ -87,6 +87,8 @@ MCalibration fitted parameters
 {'C10': 0.623489155}
 {'C10': 0.585555703, 'C20': -0.0846386036, 'C30': 0.304613717}
 ```
+
+A special thank you goes to [Dutzler](https://github.com/adtzlr), for providing us many powerful tools such as [TensorTrax](https://github.com/adtzlr/tensortrax) and [hyperelastic](https://github.com/adtzlr/hyperelastic).
 <h2>License</h2>
 
 HyperMAT- Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python, (C) 2023 Mohamed ZAARAOUI, Tunisia.
