@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -17,9 +20,12 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
+import numpy as np
+import tensortrax as tr
 
+from .._ad._deformation import Deformation
 from ._utils import volumetric
-from .._ad import Variable
+
 
 class StrainEnergy():
     """Strain energy class"""
@@ -30,25 +36,26 @@ class StrainEnergy():
         self.args = args
         self.kwargs = kwargs
         self._bulk = 0
-        if 'K' in self.kwargs.keys():
+        if 'K' in self.kwargs:
             self._bulk = self.kwargs.pop('K')
-    def jacobian(self, _grad):
-        "Calculate the second Piola-Kirchoff stress tensor: S = 2 dW/dC"
-        _grad = Variable(_grad, 1)
-        _shape = _grad.shape[:-2]
-        _dwdc = _grad.jacobian(self.iso_func, **self.kwargs).reshape((*_shape,3,3))
+    def jacobian(self, _x):
+        "Calculate the first Piola-Kirchoff stress tensor: P = dW/dF"
+        _x = Deformation(_x)
+        _dwdf =  tr.Δ(self.iso_func(_x, **self.kwargs))
         if self._bulk:
             kwargs = {'K':self._bulk}
-            _dwvdc = _grad.jacobian(self.vol_func, **kwargs).reshape((*_shape,3,3))
-            _dwdc += _dwvdc
-        return 2.0 * _dwdc
-    def hessian(self, _grad):
-        "Calculate the material tangent tensor: M = 4 d²W/dC²"
-        _grad = Variable(_grad, 1)
-        _shape = _grad.shape[:-2]
-        _ddwdcdc = _grad.hessian(self.iso_func, **self.kwargs).reshape((*_shape,3,3,3,3))
+            _dwvdf =  tr.Δ(self.vol_func(_x, **kwargs))
+            _dwdf += _dwvdf
+        _dwdf[np.abs(_dwdf)<1.0e-13]=0.0
+        return _dwdf[0,0]
+    def hessian(self, _x):
+        """Calculate the fourth-order elasticity tensor A = d²W/dF²"""
+        _x = Deformation(_x)
+        _ddwdfdf =  tr.Δδ(self.iso_func(_x, **self.kwargs))
         if self._bulk:
             kwargs = {'K':self._bulk}
-            _ddwvdcdc = _grad.hessian(self.vol_func, **kwargs).reshape((*_shape,3,3,3,3))
-            _ddwdcdc += _ddwvdcdc
-        return 4.0 * _ddwdcdc
+            _ddwvdfdf =  tr.Δδ(self.vol_func(_x, **kwargs))
+            _ddwdfdf += _ddwvdfdf
+        _ddwdfdf[np.abs(_ddwdfdf)<1.0e-13]=0.0
+        return _ddwdfdf
+
