@@ -1,4 +1,3 @@
 from ._models import *
-from ._ad import Variable
-from ._math import *
+from ._ad import Deformation
 from ._calibration import *
