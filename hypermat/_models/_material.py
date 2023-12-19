@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -18,9 +21,9 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from ._hyperelastic_models import (neo_hooke, mooney_rivlin, isihara, biderman,
+from ._models import (neo_hooke, mooney_rivlin, isihara, biderman,
                                    yeoh, james_green_simpson, ogden)
-from ._strain_energy import StrainEnergy
+from ._energy import StrainEnergy
 
 
 ###############################################################################
@@ -38,31 +41,37 @@ from ._strain_energy import StrainEnergy
 class NeoHooke(StrainEnergy):
     """Neo-Hooke hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'Neo-Hooke'
         super().__init__(neo_hooke, **kwargs)
 
 class MooneyRivlin(StrainEnergy):
     """Mooney-Rivlin hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'Mooney-Rivlin'
         super().__init__(mooney_rivlin, **kwargs)
 
 class Isihara(StrainEnergy):
     """Isihara hyperelastic model"""
     def __init__(self, **kwargs):
-        super().__init__(Isihara, **kwargs)
+        self._label = 'Isihara'
+        super().__init__(isihara, **kwargs)
 
 class Biderman(StrainEnergy):
     """Biderman hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'Biderman'
         super().__init__(biderman, **kwargs)
 
 class Yeoh(StrainEnergy):
     """Yeoh hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'Yeoh'
         super().__init__(yeoh, **kwargs)
 
 class JamesGreenSimpson(StrainEnergy):
     """James-Green-Simpson hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'JamesGreenSimpson'
         super().__init__(james_green_simpson, **kwargs)
 
 ###############################################################################
@@ -72,4 +81,6 @@ class JamesGreenSimpson(StrainEnergy):
 class Ogden(StrainEnergy):
     """Ogden hyperelastic model"""
     def __init__(self, **kwargs):
+        self._label = 'Ogden'
         super().__init__(ogden, **kwargs)
+##############################################################################
