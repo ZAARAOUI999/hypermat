@@ -1,3 +1,6 @@
+
+####################### - بــسم الله الرحمــان الرحيــم - #####################
+
 """
     HyperMAT
     Created August 2023
@@ -18,11 +21,12 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-####################### - بــسم الله الرحمــان الرحيــم - #####################
 
-from numpy import (ndarray as NDA, array as T, sqrt as SQRT, log as LN,
-                   exp as EXP)
-from .._ad import Variable as SN
+from numpy import (sqrt as SQRT, log as LN, exp as EXP)
+
+from .._ad._deformation import Deformation as DG
+
+
 ###############################################################################
 ##################### - HYPERELASTIC MATERIAL MODELS - ########################
 ############################################################################### 
@@ -38,40 +42,39 @@ from .._ad import Variable as SN
 
 ######################### - SERIES FUNCTION MODELS - ##########################
 
-def mooney_rivlin(_F: SN, **_params) -> SN:
-    _, _J1, _J2, _J3 = _F.invariants
+def mooney_rivlin(_F: DG, **_params) -> DG:
+    _, _J1, _J2, _ = _F.invariants
     _C10, _C01 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0)
     return _W
 
-def neo_hooke(_F: SN, **_params) -> SN:
-    _, _J1, _J2, _J3 = _F.invariants
+def neo_hooke(_F: DG, **_params) -> DG:
+    _, _J1, _J2, _ = _F.invariants
     _C10 = list(_params.values())[0]
     _W = _C10 * (_J1 - 3.0)
     return _W
 
-def isihara(_F: SN, **_params) -> SN:
+def isihara(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C20, _C01 = list(_params.values())
-    _W = _C10 * (_J1 - 3.0) + _C20 * (_J1 - 3.0)**2.0 * _C01 * (_J2 - 3.0) \
-       
+    _W = _C10 * (_J1 - 3.0) + _C20 * (_J1 - 3.0)**2.0 * _C01 * (_J2 - 3.0)
     return _W
 
-def biderman(_F: SN, **_params) -> SN:
+def biderman(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C20, _C30, _C01 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0) + _C20 * (_J1 - 3.0)**2.0 +\
         _C30 * (_J1 - 3.0)**3.0
     return _W
 
-def james_green_simpson(_F: SN, **_params) -> SN:
+def james_green_simpson(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C20, _C30, _C01, _C11 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0) +  _C11 * (_J1 - 3.0) \
         * (_J2 - 3.0) + _C20 * (_J1 - 3.0)**2.0 + _C30 * (_J1 - 3.0)**3.0
     return _W
 
-def haines_wilson(_F: SN, **_params) -> SN:
+def haines_wilson(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C20, _C30, _C01, _C02, _C11 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0) +  _C11 * (_J1 - 3.0) \
@@ -79,7 +82,7 @@ def haines_wilson(_F: SN, **_params) -> SN:
            + _C02 * (_J2 - 3.0)**2.0
     return _W
 
-def yeoh(_F: SN, **_params) -> SN:
+def yeoh(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C = list(_params.values())[:-1]
     _W = 0.0
@@ -87,20 +90,20 @@ def yeoh(_F: SN, **_params) -> SN:
         _W += _c * (_J1 - 3.0)**(_i+1)
     return _W
 
-def lion(_F: SN, **_params) -> SN:
+def lion(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C01, _C50 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0)**2.0 * _C50 * (_J1 - 3.0)**5.0
     return _W
 
-def haupt_sedlan(_F: SN, **_params) -> SN:
+def haupt_sedlan(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C10, _C30, _C01, _C02, _C11 = list(_params.values())
     _W = _C10 * (_J1 - 3.0) + _C01 * (_J2 - 3.0) +  _C11 * (_J1 - 3.0) \
         * (_J2 - 3.0) + _C30 * (_J1 - 3.0)**3.0 + _C02 * (_J2 - 3.0)**2.0
     return _W
 
-def hartmann_neff(_F: SN, **_params) -> SN:
+def hartmann_neff(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _alpha = list(_params.values())[0]
     _Ci0 = list(_params.values())[1:-1:2]
@@ -110,26 +113,26 @@ def hartmann_neff(_F: SN, **_params) -> SN:
         _W += _Ci0[_i] * (_J1 - 3.0)**(_i+1) + _C0j[_i] * (_J2**1.5 - 3.0**1.5)**(_i+1)
     return _W
 
-def carroll(_F: SN, **_params) -> SN:
+def carroll(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A, _B, _C = list(_params.values())
     _W = _A * _J1 + _B * _J1**4.0 + _C * _J2**0.5
     return _W
 
-def nunes(_F: SN, **_params) -> SN:
+def nunes(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C1, _C2 = list(_params.values())
     _W = _C1 * (_J1 - 3.0) + (4.0 / 3.0) * _C2 * (_J2 - 3.0)**(3.0 / 4.0)
     return _W
 
-def bahreman_darijani(_F: SN, **_params) -> SN:
+def bahreman_darijani(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A2, _B2, _A4, _A6 = list(_params.values())
     _W = _A2 * (_J1 - 3.0) + _B2 * (_J2 - 3.0) + _A4 * (_J1**2.0 - 2.0 * _J2 - 3.0) +\
         _A6 * (_J1**3.0 - 3.0 * _J1 * _J2)
     return _W
 
-def zhao(_F: SN, **_params) -> SN:
+def zhao(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C1, _C2, _C3, _C4 = list(_params.values())
     _W = _C1 * (_J1 - 3.0) + _C2 * (_J2 - 3.0) + _C3 * (_J1**2.0 - 2.0 * _J2 - 3.0) +\
@@ -138,21 +141,21 @@ def zhao(_F: SN, **_params) -> SN:
 
 ################## - LIMITING CHAIN EXTENSIBILITY MODELS - ####################
 
-def warner(_F: SN, **_params) -> SN:
+def warner(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _Im = list(_params.values())
     _A = LN(1.0 - (_J1 - 3.0) / (_Im - 3.0))
     _W = - 0.5 * _mu * _Im * _A
     return _W
 
-def kilian(_F: SN, **_params) -> SN:
+def kilian(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _JL = list(_params.values())
     _A = SQRT((_J1 - 3.0) / _JL)
     _W = - _mu * _JL * (LN(1.0 - _A) + _A)
     return _W
 
-def van_der_waals(_F: SN, **_params) -> SN:
+def van_der_waals(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _lambda_m, _beta, _a,  _K = list(_params.values())
     _A = -(_lambda_m**2.0 - 3.0) * (LN(1.0 - _beta) + _beta) - (2.0 / 3.0) * _a *\
@@ -160,21 +163,21 @@ def van_der_waals(_F: SN, **_params) -> SN:
     _W = _mu * _A
     return _W
 
-def gent(_F: SN, **_params) -> SN:
+def gent(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _E, _Im = list(_params.values())
     _A = LN(1.0 - (_J1 - 3.0) / (_Im - 3.0))
     _W = - (_E / 6.0) * (_Im - 3.0) * _A
     return _W
 
-def takamizawa_hayashi(_F: SN, **_params) -> SN:
+def takamizawa_hayashi(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _c, _Jm = list(_params.values())
     _A = LN(1.0 - ((_J1 - 2.0) / _Jm)**2.0)
     _W = _c * _A
     return _W
 
-def yeoh_fleming(_F: SN, **_params) -> SN:
+def yeoh_fleming(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A, _B, _Im, _C10 = list(_params.values())
     _C = (_Im - 3.0) * (1.0 - EXP(-_B * (_J1 - 3.0) / (_Im - 3.0)))
@@ -182,7 +185,7 @@ def yeoh_fleming(_F: SN, **_params) -> SN:
     _W = (_A / _B) * _C - _C10 * _D
     return _W
 
-def gent_3ps(_F: SN, **_params) -> SN:
+def gent_3ps(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _alpha, _Im,  _K = list(_params.values())
     _A = - _alpha * (_Im - 3.0) * LN(1.0 - (_J1 - 3.0) / (_Im - 3.0))
@@ -190,21 +193,21 @@ def gent_3ps(_F: SN, **_params) -> SN:
     _W = 0.5 * _mu * (_A + _B)
     return _W
 
-def pucci_saccomandi(_F: SN, **_params) -> SN:
+def pucci_saccomandi(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _k, _Jm = list(_params.values())
     _A = LN(1.0 - (_J1 - 2.0) / _Jm)
     _W = _k * LN(_J2 / 3.0) - 0.5 * _mu * _Jm * _A
     return _W
 
-def horgan_saccomandi(_F: SN, **_params) -> SN:
+def horgan_saccomandi(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _J = list(_params.values())
     _A = LN((_J**2.0 * (1.0 - _J1) + _J * _J2 - 1.0) / (_J - 1.0)**3.0)
     _W = - 0.5 * _mu * _J * _A
     return _W
 
-def beatty(_F: SN, **_params) -> SN:
+def beatty(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _c, _Im = list(_params.values())
     _A = - _c * _Im * (_Im - 3.0) / (2.0 * _Im - 3.0)
@@ -212,13 +215,13 @@ def beatty(_F: SN, **_params) -> SN:
     _W = _A * _B
     return _W
 
-# def horgan_murphy(_F: SN, **_params) -> SN: #TODO
+# def horgan_murphy(_F: DG, **_params) -> DG: #TODO
 #     _C, _J1, _J2, _J3 = _F.invariants
 #     return
 
 ########## - POWER LAW, EXPONENTIAL OR LOGARITHMIC FUNCTION MODELS - ##########
 
-def knowles(_F: SN, **_params) -> SN:
+def knowles(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu, _b, _n = list(_params.values())
     _a1 = _mu / (2.0 * _b)
@@ -226,7 +229,7 @@ def knowles(_F: SN, **_params) -> SN:
     _W = _a1 * (_a2 - 1.0)
     return _W
 
-def swanson(_F: SN, **_params) -> SN:
+def swanson(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _AB = list(_params.values())[:-1]
     _n = len(_AB)//2
@@ -238,28 +241,28 @@ def swanson(_F: SN, **_params) -> SN:
     _W = 1.5 * _A + 1.5 * _B
     return _W
 
-def yamashita_kawabata(_F: SN, **_params) -> SN:
+def yamashita_kawabata(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _C1, _C2, _C3, _N = list(_params.values())
     _W = _C1 * (_J1 - 3.0) + _C2 * (_J2 - 3.0) + _C3 / (_N + 1.0) *\
         (_J1 - 3.0)**(_N + 1.0)
     return _W
 
-def davis_de_thomas(_F: SN, **_params) -> SN:
+def davis_de_thomas(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A, _n, _C, _k = list(_params.values())
     _W = 0.5 * _A / (1.0 - 0.5 * _n) * (_J1 - 3.0 + _C**2.0)**(1.0 - 0.5 * _n) +\
         + _k * (_J1 - 3.0)**2.0
     return _W
 
-def gregory(_F: SN, **_params) -> SN:
+def gregory(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A, _B, _C, _m, _n = list(_params.values())
     _W = 0.5 * _A / (1.0 - 0.5 * _n) * (_J1 - 3.0 + _C**2.0)**(1.0 - 0.5 * _n) +\
         0.5 * _B / (1.0 + 0.5 * _m) * (_J1 - 3.0 + _C**2.0)**(1.0 + 0.5 * _m) 
     return _W
 
-def modified_gregory(_F: SN, **_params) -> SN:
+def modified_gregory(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _A, _alpha, _M, _B, _beta, _N = list(_params.values())
     _alpha1 = 1.0 + _alpha
@@ -268,55 +271,55 @@ def modified_gregory(_F: SN, **_params) -> SN:
         _B / _beta1 * (_J1 - 3.0 + _N**2.0)**_beta1
     return _W
 
-def aimn(_F: SN, **_params) -> SN:
+def aimn(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def beda(_F: SN, **_params) -> SN:
+def beda(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def lopez_pamies(_F: SN, **_params) -> SN:
+def lopez_pamies(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def gen_yeoh(_F: SN, **_params) -> SN:
+def gen_yeoh(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def hart_smith(_F: SN, **_params) -> SN:
+def hart_smith(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def veronda_westmann(_F: SN, **_params) -> SN:
+def veronda_westmann(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def fung_demiray(_F: SN, **_params) -> SN:
+def fung_demiray(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def blatz_ko(_F: SN, **_params) -> SN:
+def blatz_ko(_F: DG, **_params) -> DG:
     _, _J1, _J2, _J3 = _F.invariants
     _mu = list(_params.values())
     _W = 0.5 * _mu * (_J1/_J2 + 2.0 * _J3**0.5)
     return _W
 
-def ogden(_F: SN, **_params) -> SN:
+def ogden(_F: DG, **_params) -> DG:
     _λ1, _λ2, _λ3 = _F.stretches
     _params = list(_params.values())
     _mu = _params[0::2]
