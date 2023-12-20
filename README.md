@@ -1,5 +1,5 @@
 <p align="center">
- <img width="300" height="300" src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/c378b967-6457-48d7-afd3-db25973f2325">
+ <img width="100" height="100" src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/c378b967-6457-48d7-afd3-db25973f2325">
  </p>
 
 
