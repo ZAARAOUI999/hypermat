@@ -1,8 +1,6 @@
 <p align="center">
- <img width="100" height="100" src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/c378b967-6457-48d7-afd3-db25973f2325">
+ <img width="300" height="300" src="https://github.com/ZAARAOUI999/hypermat/assets/115699524/4cbcf0db-c0c6-4b25-9738-3262d8dc9d2e">
  </p>
-
-
 
 <h1 style="color:purple;" align="center" font-family= 'Varela Round'>HyperMAT <br>هايبرمات</h1>
 <p align="center">
