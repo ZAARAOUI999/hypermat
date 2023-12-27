@@ -7,7 +7,7 @@
  Hyperelastic formulations using an algorithmic differentiation with hyper-dual numbers in Python.
 </p>
 
-[![Generic badge](https://img.shields.io/badge/pypi-v0.1.2-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10407832.svg)](https://doi.org/10.5281/zenodo.10407832) [![Downloads](https://static.pepy.tech/badge/hypermat/week)](https://pepy.tech/project/hypermat)
+[![Generic badge](https://img.shields.io/badge/pypi-v0.1.2-<COLOR>.svg)](https://pypi.org/project/hypermat/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10407832.svg)](https://doi.org/10.5281/zenodo.10407832) [![Downloads](https://static.pepy.tech/badge/hypermat/week)](https://pepy.tech/project/hypermat) [![CodeFactor](https://www.codefactor.io/repository/github/zaaraoui999/hypermat/badge)](https://www.codefactor.io/repository/github/zaaraoui999/hypermat)
 
 
 HyperMAT is based on the definitions of the first Piola-Kirchhoff stress $\large P$ and the tangent modulus $\large \hat{A}$ given below:
